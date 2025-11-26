@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import Leaderboard from './components/Leaderboard';
@@ -15,6 +15,26 @@ function App() {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>(playersSeed as Player[]);
   const [matches, setMatches] = useState<Match[]>(matchesSeed as Match[]);
+
+  // Load from localStorage on first render
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const storedPlayers = localStorage.getItem('toge-tracker-players');
+      const storedMatches = localStorage.getItem('toge-tracker-matches');
+      if (storedPlayers) setPlayers(JSON.parse(storedPlayers));
+      if (storedMatches) setMatches(JSON.parse(storedMatches));
+    } catch (e) {
+      console.warn('Konnte gespeicherte Daten nicht laden.', e);
+    }
+  }, []);
+
+  // Persist to localStorage when state changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('toge-tracker-players', JSON.stringify(players));
+    localStorage.setItem('toge-tracker-matches', JSON.stringify(matches));
+  }, [players, matches]);
 
   const playersById = useMemo(() => {
     const map: Record<string, Player> = {};

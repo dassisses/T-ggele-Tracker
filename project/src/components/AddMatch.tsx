@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Users } from 'lucide-react';
 import { Player, NewMatchPayload, MatchType } from '../types';
 
@@ -18,6 +18,21 @@ export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchP
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+
+  // Ensure the team slots match the selected mode
+  useEffect(() => {
+    if (matchType === '1v1') {
+      setTeam1Players(['']);
+      setTeam2Players(['']);
+    } else if (matchType === '2v2') {
+      setTeam1Players((prev) => [prev[0] || '', prev[1] || '']);
+      setTeam2Players((prev) => [prev[0] || '', prev[1] || '']);
+    } else {
+      // 2v1
+      setTeam1Players((prev) => [prev[0] || '', prev[1] || '']);
+      setTeam2Players(['']);
+    }
+  }, [matchType]);
 
   function handleAddPlayer(e: React.FormEvent) {
     e.preventDefault();
@@ -48,6 +63,13 @@ export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchP
 
     if (!score1 || !score2 || team1Ids.some((id) => !id) || team2Ids.some((id) => !id)) {
       setMessage('Bitte alle Felder ausfüllen.');
+      return;
+    }
+
+    // Prevent duplicates across all selected players
+    const allIds = [...team1Ids, ...team2Ids];
+    if (new Set(allIds).size !== allIds.length) {
+      setMessage('Jeder Spieler darf nur einmal pro Match gesetzt werden.');
       return;
     }
 
