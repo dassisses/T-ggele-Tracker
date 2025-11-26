@@ -1,83 +1,52 @@
-import { useEffect, useState } from 'react';
-import { supabase, Match, Player } from '../lib/supabase';
+import { useMemo, useState } from 'react';
 import { Calendar, Filter, Trophy } from 'lucide-react';
+import { Match, Player } from '../types';
 
-export default function MatchHistory() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [players, setPlayers] = useState<Record<string, Player>>({});
-  const [loading, setLoading] = useState(true);
+interface MatchHistoryProps {
+  matches: Match[];
+  players: Player[];
+}
+
+export default function MatchHistory({ matches, players }: MatchHistoryProps) {
   const [dateFilter, setDateFilter] = useState('all');
 
-  useEffect(() => {
-    loadMatches();
-  }, [dateFilter]);
+  const playersById = useMemo(() => {
+    const map: Record<string, Player> = {};
+    players.forEach((p) => {
+      map[p.id] = p;
+    });
+    return map;
+  }, [players]);
 
-  async function loadMatches() {
-    try {
-      let query = supabase
-        .from('matches')
-        .select('*')
-        .order('played_at', { ascending: false });
+  const filteredMatches = useMemo(() => {
+    const now = new Date();
+    let startDate: Date | null = null;
 
-      if (dateFilter !== 'all') {
-        const now = new Date();
-        let startDate = new Date();
-
-        switch (dateFilter) {
-          case 'today':
-            startDate.setHours(0, 0, 0, 0);
-            break;
-          case 'week':
-            startDate.setDate(now.getDate() - 7);
-            break;
-          case 'month':
-            startDate.setMonth(now.getMonth() - 1);
-            break;
-        }
-
-        query = query.gte('played_at', startDate.toISOString());
-      }
-
-      const { data: matchesData, error } = await query;
-
-      if (error) throw error;
-
-      if (matchesData) {
-        setMatches(matchesData);
-
-        const playerIds = new Set<string>();
-        matchesData.forEach(m => {
-          if (m.player1_id) playerIds.add(m.player1_id);
-          if (m.player2_id) playerIds.add(m.player2_id);
-        });
-
-        if (playerIds.size > 0) {
-          const { data: playersData } = await supabase
-            .from('players')
-            .select('*')
-            .in('id', Array.from(playerIds));
-
-          if (playersData) {
-            const playersMap: Record<string, Player> = {};
-            playersData.forEach(p => playersMap[p.id] = p);
-            setPlayers(playersMap);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error loading matches:', error);
-    } finally {
-      setLoading(false);
+    switch (dateFilter) {
+      case 'today':
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case 'week':
+        startDate = new Date();
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        startDate = new Date();
+        startDate.setMonth(now.getMonth() - 1);
+        break;
+      default:
+        startDate = null;
     }
-  }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-      </div>
+    const filtered = startDate
+      ? matches.filter((m) => new Date(m.played_at).getTime() >= startDate!.getTime())
+      : matches;
+
+    return [...filtered].sort(
+      (a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime()
     );
-  }
+  }, [matches, dateFilter]);
 
   return (
     <div className="space-y-6">
@@ -100,10 +69,10 @@ export default function MatchHistory() {
         </div>
 
         <div className="space-y-4">
-          {matches.map((match) => (
-            <MatchItem key={match.id} match={match} players={players} />
+          {filteredMatches.map((match) => (
+            <MatchItem key={match.id} match={match} players={playersById} />
           ))}
-          {matches.length === 0 && (
+          {filteredMatches.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               No matches found for the selected time period.
             </div>

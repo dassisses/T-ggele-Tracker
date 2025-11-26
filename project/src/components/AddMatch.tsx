@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
-import { supabase, Player } from '../lib/supabase';
-import { calculateEloChange } from '../lib/elo';
+import { useState } from 'react';
 import { Plus, Users } from 'lucide-react';
+import { Player, NewMatchPayload } from '../types';
 
-export default function AddMatch() {
-  const [players, setPlayers] = useState<Player[]>([]);
+interface AddMatchProps {
+  players: Player[];
+  onAddPlayer: (name: string) => void;
+  onAddMatch: (payload: NewMatchPayload) => { ok: boolean; error?: string };
+}
+
+export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchProps) {
   const [matchType, setMatchType] = useState<'singles' | 'teams'>('singles');
   const [player1Id, setPlayer1Id] = useState('');
   const [player2Id, setPlayer2Id] = useState('');
@@ -13,144 +17,55 @@ export default function AddMatch() {
   const [loading, setLoading] = useState(false);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [newPlayerEmail, setNewPlayerEmail] = useState('');
+  const [message, setMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPlayers();
-  }, []);
-
-  async function loadPlayers() {
-    const { data } = await supabase
-      .from('players')
-      .select('*')
-      .order('name');
-    if (data) setPlayers(data);
-  }
-
-  async function handleAddPlayer(e: React.FormEvent) {
+  function handleAddPlayer(e: React.FormEvent) {
     e.preventDefault();
-    if (!newPlayerName || !newPlayerEmail) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('players')
-        .insert([{ name: newPlayerName, email: newPlayerEmail }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      if (data) {
-        setPlayers([...players, data]);
-        setNewPlayerName('');
-        setNewPlayerEmail('');
-        setShowAddPlayer(false);
-      }
-    } catch (error) {
-      console.error('Error adding player:', error);
-      alert('Error adding player. Email might already exist.');
-    }
+    if (!newPlayerName.trim()) return;
+    onAddPlayer(newPlayerName.trim());
+    setNewPlayerName('');
+    setShowAddPlayer(false);
+    setMessage('Spieler hinzugefügt.');
   }
 
   async function handleSubmitMatch(e: React.FormEvent) {
     e.preventDefault();
+    setMessage(null);
+
     if (!player1Id || !player2Id || !score1 || !score2) {
-      alert('Please fill in all fields');
+      setMessage('Bitte alle Felder ausfüllen.');
       return;
     }
 
     if (player1Id === player2Id) {
-      alert('Players must be different');
+      setMessage('Spieler müssen unterschiedlich sein.');
       return;
     }
 
     setLoading(true);
 
-    try {
-      const s1 = parseInt(score1);
-      const s2 = parseInt(score2);
+    const s1 = parseInt(score1, 10);
+    const s2 = parseInt(score2, 10);
 
-      if (s1 === s2) {
-        alert('Scores cannot be tied');
-        setLoading(false);
-        return;
-      }
+    const result = onAddMatch({
+      player1Id,
+      player2Id,
+      score1: s1,
+      score2: s2,
+    });
 
-      const player1 = players.find(p => p.id === player1Id);
-      const player2 = players.find(p => p.id === player2Id);
-
-      if (!player1 || !player2) {
-        throw new Error('Players not found');
-      }
-
-      const winnerId = s1 > s2 ? player1Id : player2Id;
-      const loserId = s1 > s2 ? player2Id : player1Id;
-      const winnerRating = s1 > s2 ? player1.elo_rating : player2.elo_rating;
-      const loserRating = s1 > s2 ? player2.elo_rating : player1.elo_rating;
-
-      const eloChange = calculateEloChange(winnerRating, loserRating);
-
-      const { error: matchError } = await supabase
-        .from('matches')
-        .insert([{
-          match_type: matchType,
-          player1_id: player1Id,
-          player2_id: player2Id,
-          score1: s1,
-          score2: s2,
-          winner_id: winnerId,
-          elo_change: eloChange,
-          played_at: new Date().toISOString(),
-        }]);
-
-      if (matchError) throw matchError;
-
-      const winner = s1 > s2 ? player1 : player2;
-      const loser = s1 > s2 ? player2 : player1;
-
-      const winnerStreak = winner.current_streak >= 0 ? winner.current_streak + 1 : 1;
-      const loserStreak = loser.current_streak <= 0 ? loser.current_streak - 1 : -1;
-
-      await Promise.all([
-        supabase
-          .from('players')
-          .update({
-            elo_rating: winnerRating + eloChange,
-            matches_played: winner.matches_played + 1,
-            matches_won: winner.matches_won + 1,
-            goals_scored: winner.goals_scored + (s1 > s2 ? s1 : s2),
-            goals_conceded: winner.goals_conceded + (s1 > s2 ? s2 : s1),
-            current_streak: winnerStreak,
-            best_streak: Math.max(winner.best_streak, winnerStreak),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', winnerId),
-        supabase
-          .from('players')
-          .update({
-            elo_rating: Math.max(0, loserRating - eloChange),
-            matches_played: loser.matches_played + 1,
-            matches_lost: loser.matches_lost + 1,
-            goals_scored: loser.goals_scored + (s1 > s2 ? s2 : s1),
-            goals_conceded: loser.goals_conceded + (s1 > s2 ? s1 : s2),
-            current_streak: loserStreak,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', loserId),
-      ]);
-
-      setPlayer1Id('');
-      setPlayer2Id('');
-      setScore1('');
-      setScore2('');
-      loadPlayers();
-      alert('Match recorded successfully!');
-    } catch (error) {
-      console.error('Error recording match:', error);
-      alert('Error recording match. Please try again.');
-    } finally {
+    if (!result.ok) {
+      setMessage(result.error || 'Fehler beim Speichern.');
       setLoading(false);
+      return;
     }
+
+    setPlayer1Id('');
+    setPlayer2Id('');
+    setScore1('');
+    setScore2('');
+    setMessage('Match gespeichert.');
+    setLoading(false);
   }
 
   return (
@@ -167,27 +82,23 @@ export default function AddMatch() {
           </button>
         </div>
 
+        {message && (
+          <div className="px-4 py-3 rounded-lg bg-emerald-50 text-emerald-700 text-sm">
+            {message}
+          </div>
+        )}
+
         {showAddPlayer && (
           <form onSubmit={handleAddPlayer} className="p-4 bg-gray-50 rounded-lg space-y-4">
             <h3 className="font-semibold text-gray-900">Add New Player</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Player Name"
-                value={newPlayerName}
-                onChange={(e) => setNewPlayerName(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                value={newPlayerEmail}
-                onChange={(e) => setNewPlayerEmail(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Player Name"
+              value={newPlayerName}
+              onChange={(e) => setNewPlayerName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              required
+            />
             <button
               type="submit"
               className="w-full py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"

@@ -1,60 +1,38 @@
-import { useEffect, useState } from 'react';
-import { supabase, Player, Match } from '../lib/supabase';
+import { useMemo } from 'react';
 import { ArrowLeft, Trophy, Target, TrendingUp, Flame, Award } from 'lucide-react';
+import { Match, Player } from '../types';
 
 interface PlayerProfileProps {
   playerId: string;
+  players: Player[];
+  matches: Match[];
   onBack: () => void;
 }
 
-export default function PlayerProfile({ playerId, onBack }: PlayerProfileProps) {
-  const [player, setPlayer] = useState<Player | null>(null);
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [recentForm, setRecentForm] = useState<string[]>([]);
+export default function PlayerProfile({ playerId, players, matches, onBack }: PlayerProfileProps) {
+  const player = useMemo(() => players.find((p) => p.id === playerId) || null, [players, playerId]);
 
-  useEffect(() => {
-    loadPlayerData();
-  }, [playerId]);
+  const playerMatches = useMemo(
+    () =>
+      matches
+        .filter((m) => m.player1_id === playerId || m.player2_id === playerId)
+        .sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
+        .slice(0, 10),
+    [matches, playerId]
+  );
 
-  async function loadPlayerData() {
-    try {
-      const [playerRes, matchesRes] = await Promise.all([
-        supabase.from('players').select('*').eq('id', playerId).single(),
-        supabase
-          .from('matches')
-          .select('*')
-          .or(`player1_id.eq.${playerId},player2_id.eq.${playerId}`)
-          .order('played_at', { ascending: false })
-          .limit(10),
-      ]);
+  const recentForm = useMemo(
+    () => playerMatches.slice(0, 5).map((m) => (m.winner_id === playerId ? 'W' : 'L')),
+    [playerMatches, playerId]
+  );
 
-      if (playerRes.data) {
-        setPlayer(playerRes.data);
-      }
-
-      if (matchesRes.data) {
-        setMatches(matchesRes.data);
-
-        const form = matchesRes.data.slice(0, 5).map(m =>
-          m.winner_id === playerId ? 'W' : 'L'
-        );
-        setRecentForm(form);
-      }
-    } catch (error) {
-      console.error('Error loading player data:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-      </div>
-    );
-  }
+  const playersById = useMemo(() => {
+    const map: Record<string, Player> = {};
+    players.forEach((p) => {
+      map[p.id] = p;
+    });
+    return map;
+  }, [players]);
 
   if (!player) {
     return (
@@ -91,7 +69,6 @@ export default function PlayerProfile({ playerId, onBack }: PlayerProfileProps) 
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{player.name}</h1>
-              <p className="text-gray-600">{player.email}</p>
             </div>
           </div>
           <div className="text-right">
@@ -160,10 +137,10 @@ export default function PlayerProfile({ playerId, onBack }: PlayerProfileProps) 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Match History</h2>
         <div className="space-y-3">
-          {matches.map((match) => (
-            <MatchRow key={match.id} match={match} playerId={playerId} />
+          {playerMatches.map((match) => (
+            <MatchRow key={match.id} match={match} playerId={playerId} players={playersById} />
           ))}
-          {matches.length === 0 && (
+          {playerMatches.length === 0 && (
             <p className="text-center text-gray-500 py-8">No matches played yet</p>
           )}
         </div>
@@ -192,26 +169,13 @@ function StatBox({ icon: Icon, label, value, color }: any) {
   );
 }
 
-function MatchRow({ match, playerId }: { match: Match; playerId: string }) {
-  const [opponentName, setOpponentName] = useState('Unknown');
+function MatchRow({ match, playerId, players }: { match: Match; playerId: string; players: Record<string, Player> }) {
   const isWinner = match.winner_id === playerId;
   const isPlayer1 = match.player1_id === playerId;
   const playerScore = isPlayer1 ? match.score1 : match.score2;
   const opponentScore = isPlayer1 ? match.score2 : match.score1;
   const opponentId = isPlayer1 ? match.player2_id : match.player1_id;
-
-  useEffect(() => {
-    if (opponentId) {
-      supabase
-        .from('players')
-        .select('name')
-        .eq('id', opponentId)
-        .single()
-        .then(({ data }) => {
-          if (data) setOpponentName(data.name);
-        });
-    }
-  }, [opponentId]);
+  const opponentName = opponentId ? players[opponentId]?.name || 'Unknown' : 'Unknown';
 
   return (
     <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${

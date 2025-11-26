@@ -1,59 +1,26 @@
-import { useEffect, useState } from 'react';
-import { supabase, Player } from '../lib/supabase';
+import { useMemo, useState } from 'react';
 import { Search, Medal, TrendingUp, TrendingDown } from 'lucide-react';
+import { Player } from '../types';
 
 interface LeaderboardProps {
+  players: Player[];
   onPlayerClick: (playerId: string) => void;
 }
 
-export default function Leaderboard({ onPlayerClick }: LeaderboardProps) {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>([]);
+export default function Leaderboard({ players, onPlayerClick }: LeaderboardProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadPlayers();
-  }, []);
+  const sortedPlayers = useMemo(
+    () => [...players].sort((a, b) => b.elo_rating - a.elo_rating),
+    [players]
+  );
 
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      const filtered = players.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.email.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredPlayers(filtered);
-    } else {
-      setFilteredPlayers(players);
-    }
-  }, [searchQuery, players]);
-
-  async function loadPlayers() {
-    try {
-      const { data, error } = await supabase
-        .from('players')
-        .select('*')
-        .order('elo_rating', { ascending: false });
-
-      if (error) throw error;
-      if (data) {
-        setPlayers(data);
-        setFilteredPlayers(data);
-      }
-    } catch (error) {
-      console.error('Error loading players:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-      </div>
+  const filteredPlayers = useMemo(() => {
+    if (!searchQuery.trim()) return sortedPlayers;
+    return sortedPlayers.filter((p) =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }
+  }, [sortedPlayers, searchQuery]);
 
   return (
     <div className="space-y-6">
@@ -114,7 +81,6 @@ export default function Leaderboard({ onPlayerClick }: LeaderboardProps) {
                     </td>
                     <td className="py-4 px-4">
                       <div className="font-semibold text-gray-900">{player.name}</div>
-                      <div className="text-sm text-gray-500">{player.email}</div>
                     </td>
                     <td className="py-4 px-4 text-center">
                       <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold">
