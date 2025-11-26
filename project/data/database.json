@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "version": 1,
+    "lastUpdated": "2024-07-22T00:00:00.000Z",
+    "description": "Lightweight tracker store for tasks and notes"
+  },
+  "entries": [
+    {
+      "id": "9f2c8b1a-8b4c-4f6e-9b82-81d9c0e5f731",
+      "title": "Set up documentation structure",
+      "status": "done",
+      "tags": ["docs", "setup"],
+      "createdAt": "2024-07-20T12:00:00.000Z",
+      "updatedAt": "2024-07-22T09:00:00.000Z",
+      "notes": "Created docs directory with templates and roadmap."
+    },
+    {
+      "id": "f4aaef52-b3b1-4018-9a3b-6fba9d9ad5d7",
+      "title": "Define JSON data model",
+      "status": "done",
+      "tags": ["data", "design"],
+      "createdAt": "2024-07-21T08:30:00.000Z",
+      "updatedAt": "2024-07-22T09:10:00.000Z",
+      "notes": "Documented schema and added starter content for the JSON database."
+    },
+    {
+      "id": "e2cc8d41-7d8d-4e1c-9887-7f7c57f499bf",
+      "title": "Prepare GitHub Pages plan",
+      "status": "in-progress",
+      "tags": ["docs", "github-pages"],
+      "createdAt": "2024-07-22T09:15:00.000Z",
+      "updatedAt": "2024-07-22T09:15:00.000Z",
+      "notes": "Next step: add deployment workflow once repository is public."
+    }
+  ]
+}
