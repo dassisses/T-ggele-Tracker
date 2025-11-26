@@ -15,14 +15,14 @@ export default function PlayerProfile({ playerId, players, matches, onBack }: Pl
   const playerMatches = useMemo(
     () =>
       matches
-        .filter((m) => m.player1_id === playerId || m.player2_id === playerId)
+        .filter((m) => m.team1_ids.includes(playerId) || m.team2_ids.includes(playerId))
         .sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
         .slice(0, 10),
     [matches, playerId]
   );
 
   const recentForm = useMemo(
-    () => playerMatches.slice(0, 5).map((m) => (m.winner_id === playerId ? 'W' : 'L')),
+    () => playerMatches.slice(0, 5).map((m) => (m.winner_ids.includes(playerId) ? 'W' : 'L')),
     [playerMatches, playerId]
   );
 
@@ -170,12 +170,12 @@ function StatBox({ icon: Icon, label, value, color }: any) {
 }
 
 function MatchRow({ match, playerId, players }: { match: Match; playerId: string; players: Record<string, Player> }) {
-  const isWinner = match.winner_id === playerId;
-  const isPlayer1 = match.player1_id === playerId;
-  const playerScore = isPlayer1 ? match.score1 : match.score2;
-  const opponentScore = isPlayer1 ? match.score2 : match.score1;
-  const opponentId = isPlayer1 ? match.player2_id : match.player1_id;
-  const opponentName = opponentId ? players[opponentId]?.name || 'Unknown' : 'Unknown';
+  const isTeam1 = match.team1_ids.includes(playerId);
+  const isWinner = match.winner_ids.includes(playerId);
+  const playerScore = isTeam1 ? match.score1 : match.score2;
+  const opponentScore = isTeam1 ? match.score2 : match.score1;
+  const opponentIds = isTeam1 ? match.team2_ids : match.team1_ids;
+  const opponentName = opponentIds.map((id) => players[id]?.name || 'Unknown').join(' & ') || 'Unknown';
 
   return (
     <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${

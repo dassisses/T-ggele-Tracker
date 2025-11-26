@@ -19,7 +19,7 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
             <Trophy className="w-8 h-8 text-emerald-600" />
-            <span className="text-2xl font-bold text-gray-900">Tögele Tracker</span>
+            <span className="text-2xl font-bold text-gray-900">Apps Team Tögelle Tracker</span>
           </div>
           <div className="flex space-x-1">
             {navItems.map((item) => {

@@ -133,17 +133,23 @@ function StatCard({ title, value, icon: Icon, color }: any) {
 }
 
 function MatchCard({ match, players }: { match: Match; players: Record<string, Player> }) {
+  const teamName = (ids: string[]) =>
+    ids.map((id) => players[id]?.name || 'Unbekannt').join(' & ');
+  const team1Name = teamName(match.team1_ids);
+  const team2Name = teamName(match.team2_ids);
+  const team1Won = match.winner_ids.some((id) => match.team1_ids.includes(id));
+
   return (
     <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
       <div className="flex items-center space-x-3 flex-1">
-        <div className={`text-sm font-semibold ${match.winner_id === match.player1_id ? 'text-emerald-600' : 'text-gray-600'}`}>
-          {players[match.player1_id || '']?.name || 'Player 1'}
+        <div className={`text-sm font-semibold ${team1Won ? 'text-emerald-600' : 'text-gray-600'}`}>
+          {team1Name || 'Team 1'}
         </div>
         <div className="text-lg font-bold text-gray-900">
           {match.score1} - {match.score2}
         </div>
-        <div className={`text-sm font-semibold ${match.winner_id === match.player2_id ? 'text-emerald-600' : 'text-gray-600'}`}>
-          {players[match.player2_id || '']?.name || 'Player 2'}
+        <div className={`text-sm font-semibold ${!team1Won ? 'text-emerald-600' : 'text-gray-600'}`}>
+          {team2Name || 'Team 2'}
         </div>
       </div>
       <div className="text-xs text-gray-500">

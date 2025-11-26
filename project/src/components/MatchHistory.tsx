@@ -84,10 +84,11 @@ export default function MatchHistory({ matches, players }: MatchHistoryProps) {
 }
 
 function MatchItem({ match, players }: { match: Match; players: Record<string, Player> }) {
-  const player1 = players[match.player1_id || ''];
-  const player2 = players[match.player2_id || ''];
-
-  const isPlayer1Winner = match.winner_id === match.player1_id;
+  const teamName = (ids: string[]) =>
+    ids.map((id) => players[id]?.name || 'Unknown').join(' & ');
+  const team1Name = teamName(match.team1_ids);
+  const team2Name = teamName(match.team2_ids);
+  const team1Won = match.winner_ids.some((id) => match.team1_ids.includes(id));
   const matchDate = new Date(match.played_at);
 
   return (
@@ -102,11 +103,10 @@ function MatchItem({ match, players }: { match: Match; players: Record<string, P
           </div>
 
           <div className="flex items-center space-x-4 flex-1">
-            <div className={`flex items-center space-x-2 ${isPlayer1Winner ? '' : 'opacity-60'}`}>
-              {isPlayer1Winner && <Trophy className="w-5 h-5 text-yellow-500" />}
+            <div className={`flex items-center space-x-2 ${team1Won ? '' : 'opacity-60'}`}>
+              {team1Won && <Trophy className="w-5 h-5 text-yellow-500" />}
               <div>
-                <div className="font-semibold text-gray-900">{player1?.name || 'Unknown'}</div>
-                <div className="text-sm text-gray-500">{player1?.elo_rating || 0} ELO</div>
+                <div className="font-semibold text-gray-900">{team1Name || 'Team 1'}</div>
               </div>
             </div>
 
@@ -116,12 +116,11 @@ function MatchItem({ match, players }: { match: Match; players: Record<string, P
               <span className="text-2xl font-bold text-gray-900">{match.score2}</span>
             </div>
 
-            <div className={`flex items-center space-x-2 ${!isPlayer1Winner ? '' : 'opacity-60'}`}>
+            <div className={`flex items-center space-x-2 ${!team1Won ? '' : 'opacity-60'}`}>
               <div className="text-right">
-                <div className="font-semibold text-gray-900">{player2?.name || 'Unknown'}</div>
-                <div className="text-sm text-gray-500">{player2?.elo_rating || 0} ELO</div>
+                <div className="font-semibold text-gray-900">{team2Name || 'Team 2'}</div>
               </div>
-              {!isPlayer1Winner && <Trophy className="w-5 h-5 text-yellow-500" />}
+              {!team1Won && <Trophy className="w-5 h-5 text-yellow-500" />}
             </div>
           </div>
         </div>
