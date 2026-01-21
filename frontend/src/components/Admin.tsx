@@ -462,34 +462,35 @@ export default function Admin({
                         </div>
                     </div>
                 </div>
-
-                {seasons.length > 0 && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4 mb-6">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Saison Archiv</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {seasons.map(season => (
-                                <div key={season.id} className="group p-5 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-800 cursor-pointer transition-all relative overflow-hidden"
-                                    onClick={() => onViewSeason(season.id, season.name)}
-                                >
-                                    <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <History className="w-12 h-12 text-blue-200 dark:text-blue-800 transform rotate-12" />
-                                    </div>
-                                    <div className="relative z-10">
-                                        <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{season.name}</h3>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium bg-white dark:bg-gray-700 inline-block px-2 py-1 rounded-md border border-gray-100 dark:border-gray-600">
-                                            {new Date(season.archived_at).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </div>
-            );
+
+            {seasons.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4 mb-6">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Saison Archiv</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {seasons.map(season => (
+                            <div key={season.id} className="group p-5 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-800 cursor-pointer transition-all relative overflow-hidden"
+                                onClick={() => onViewSeason(season.id, season.name)}
+                            >
+                                <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <History className="w-12 h-12 text-blue-200 dark:text-blue-800 transform rotate-12" />
+                                </div>
+                                <div className="relative z-10">
+                                    <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{season.name}</h3>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium bg-white dark:bg-gray-700 inline-block px-2 py-1 rounded-md border border-gray-100 dark:border-gray-600">
+                                        {new Date(season.archived_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
