@@ -1,228 +1,180 @@
-import { useEffect, useState } from 'react';
-import { Plus, Users } from 'lucide-react';
-import { Player, NewMatchPayload, MatchType } from '../types';
+import React, { useEffect, useState } from 'react';
+import { Users, AlertTriangle, CheckCircle, Trophy, UserPlus } from 'lucide-react';
+import { Player, NewMatchPayload, MatchType, Rank } from '../types';
+import { getRank } from '../utils/ranks';
 
 interface AddMatchProps {
   players: Player[];
   onAddPlayer: (name: string) => void;
   onAddMatch: (payload: NewMatchPayload) => Promise<{ ok: boolean; error?: string }>;
+  ranks: Rank[];
 }
 
-export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchProps) {
+export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) {
   const [matchType, setMatchType] = useState<MatchType>('1v1');
   const [team1Players, setTeam1Players] = useState(['', '']);
   const [team2Players, setTeam2Players] = useState(['', '']);
   const [score1, setScore1] = useState('');
   const [score2, setScore2] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAddPlayer, setShowAddPlayer] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState('');
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null);
 
-  // Ensure the team slots match the selected mode
   useEffect(() => {
     if (matchType === '1v1') {
       setTeam1Players(['']);
       setTeam2Players(['']);
     } else if (matchType === '2v2') {
-      setTeam1Players((prev) => [prev[0] || '', prev[1] || '']);
-      setTeam2Players((prev) => [prev[0] || '', prev[1] || '']);
+      setTeam1Players(['', '']);
+      setTeam2Players(['', '']);
     } else {
-      // 2v1
-      setTeam1Players((prev) => [prev[0] || '', prev[1] || '']);
+      setTeam1Players(['', '']);
       setTeam2Players(['']);
     }
   }, [matchType]);
-
-  function handleAddPlayer(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newPlayerName.trim()) return;
-    onAddPlayer(newPlayerName.trim());
-    setNewPlayerName('');
-    setShowAddPlayer(false);
-    setMessage('Spieler hinzugefügt.');
-  }
 
   async function handleSubmitMatch(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
 
-    const team1Ids =
-      matchType === '1v1'
-        ? [team1Players[0]]
-        : matchType === '2v2'
-          ? team1Players
-          : team1Players;
+    const activeTeam1Players = team1Players.slice(0, matchType === '2v1' || matchType === '2v2' ? 2 : 1);
+    const activeTeam2Players = team2Players.slice(0, matchType === '2v2' ? 2 : 1);
 
-    const team2Ids =
-      matchType === '1v1'
-        ? [team2Players[0]]
-        : matchType === '2v2'
-          ? team2Players
-          : [team2Players[0]];
-
-    if (!score1 || !score2 || team1Ids.some((id) => !id) || team2Ids.some((id) => !id)) {
-      setMessage('Bitte alle Felder ausfüllen.');
+    if (!score1 || !score2 || activeTeam1Players.some((id) => !id) || activeTeam2Players.some((id) => !id)) {
+      setMessage({ text: 'Bitte alle Felder ausfüllen.', type: 'error' });
       return;
     }
 
-    // Prevent duplicates across all selected players
-    const allIds = [...team1Ids, ...team2Ids];
+    const s1 = parseInt(score1, 10);
+    const s2 = parseInt(score2, 10);
+
+    if (s1 > 10 || s2 > 10) {
+      setMessage({ text: 'Maximaler Score ist 10!', type: 'error' });
+      return;
+    }
+
+    const allIds = [...activeTeam1Players, ...activeTeam2Players];
     if (new Set(allIds).size !== allIds.length) {
-      setMessage('Jeder Spieler darf nur einmal pro Match gesetzt werden.');
+      setMessage({ text: 'Ein Spieler darf nur einmal im Match sein.', type: 'error' });
       return;
     }
 
     setLoading(true);
 
-    const s1 = parseInt(score1, 10);
-    const s2 = parseInt(score2, 10);
-
-    const result = await onAddMatch({ matchType, team1Ids, team2Ids, score1: s1, score2: s2 });
+    const result = await onAddMatch({
+      matchType,
+      team1Ids: activeTeam1Players,
+      team2Ids: activeTeam2Players,
+      score1: s1,
+      score2: s2
+    });
 
     if (!result.ok) {
-      setMessage(result.error || 'Fehler beim Speichern.');
-      setLoading(false);
-      return;
+      setMessage({ text: result.error || 'Fehler beim Speichern.', type: 'error' });
+    } else {
+      setScore1('');
+      setScore2('');
+      setMessage({ text: 'Match erfolgreich eingetragen!', type: 'success' });
+      // Reset after 3 seconds
+      setTimeout(() => setMessage(null), 3000);
     }
-
-    setTeam1Players(['', '']);
-    setTeam2Players(['', '']);
-    setScore1('');
-    setScore2('');
-    setMessage('Match gespeichert.');
     setLoading(false);
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Record New Tögelle Match</h1>
-          <button
-            onClick={() => setShowAddPlayer(!showAddPlayer)}
-            className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Player</span>
-          </button>
+    <div className="max-w-2xl mx-auto animate-fade-in">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 space-y-8 border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl">
+            <Trophy className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Match eintragen</h1>
         </div>
 
         {message && (
-          <div className="px-4 py-3 rounded-lg bg-emerald-50 text-emerald-700 text-sm">
-            {message}
+          <div className={`p-4 rounded-2xl flex items-center gap-3 animate-fade-in ${message.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30' :
+              'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
+            }`}>
+            {message.type === 'error' ? <AlertTriangle className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
+            <span className="font-bold text-sm">{message.text}</span>
           </div>
         )}
 
-        {showAddPlayer && (
-          <form onSubmit={handleAddPlayer} className="p-4 bg-gray-50 rounded-lg space-y-4">
-            <h3 className="font-semibold text-gray-900">Add New Player</h3>
-            <input
-              type="text"
-              placeholder="Player Name"
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              Add Player
-            </button>
-          </form>
-        )}
-
-        <form onSubmit={handleSubmitMatch} className="space-y-6">
+        <form onSubmit={handleSubmitMatch} className="space-y-10">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Match Type</label>
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                onClick={() => setMatchType('1v1')}
-                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '1v1'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                  }`}
-              >
-                <Users className="w-5 h-5 mx-auto mb-1" />
-                Singles
-              </button>
-              <button
-                type="button"
-                onClick={() => setMatchType('2v2')}
-                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '2v2'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                  }`}
-              >
-                <Users className="w-5 h-5 mx-auto mb-1" />
-                2 vs 2
-              </button>
-              <button
-                type="button"
-                onClick={() => setMatchType('2v1')}
-                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '2v1'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                  }`}
-              >
-                <Users className="w-5 h-5 mx-auto mb-1" />
-                2 vs 1
-              </button>
+            <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4">Spielmodus wählen</label>
+            <div className="grid grid-cols-3 gap-3">
+              <ModeButton label="1 vs 1" mode="1v1" current={matchType} set={setMatchType} />
+              <ModeButton label="2 vs 2" mode="2v2" current={matchType} set={setMatchType} />
+              <ModeButton label="2 vs 1" mode="2v1" current={matchType} set={setMatchType} />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {matchType === '2v1' ? 'Team (2 Spieler)' : 'Team 1'}
-              </label>
-              {renderTeamSelects('team1', matchType, team1Players, setTeam1Players, players)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* Team 1 / Winner 1 */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">
+                  {matchType === '2v1' ? 'Team (Angreifer)' : 'Team A'}
+                </label>
+                <Users className="w-4 h-4 text-emerald-500" />
+              </div>
+              <PlayerSelects
+                ids={team1Players}
+                setIds={setTeam1Players}
+                count={matchType === '2v1' || matchType === '2v2' ? 2 : 1}
+                players={players}
+                ranks={ranks}
+              />
+              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
+                <label className="absolute -top-3 left-3 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Score A</label>
+                <input
+                  type="number"
+                  value={score1}
+                  onChange={(e) => setScore1(e.target.value)}
+                  min="0"
+                  max="10"
+                  className="w-full text-5xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-200 dark:placeholder-gray-700"
+                  placeholder="0"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {matchType === '2v1' ? 'Einzelspieler' : 'Team 2'}
-              </label>
-              {renderTeamSelects('team2', matchType, team2Players, setTeam2Players, players, matchType === '2v1' ? 1 : 2)}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 1</label>
-              <input
-                type="number"
-                placeholder="Score"
-                value={score1}
-                onChange={(e) => setScore1(e.target.value)}
-                min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
+            {/* Team 2 / Winner 2 */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">
+                  {matchType === '2v1' ? 'Einzelspieler' : 'Team B'}
+                </label>
+                <UserPlus className="w-4 h-4 text-emerald-500" />
+              </div>
+              <PlayerSelects
+                ids={team2Players}
+                setIds={setTeam2Players}
+                count={matchType === '2v2' ? 2 : 1}
+                players={players}
+                ranks={ranks}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 2</label>
-              <input
-                type="number"
-                placeholder="Score"
-                value={score2}
-                onChange={(e) => setScore2(e.target.value)}
-                min="0"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
+              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
+                <label className="absolute -top-3 left-3 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Score B</label>
+                <input
+                  type="number"
+                  value={score2}
+                  onChange={(e) => setScore2(e.target.value)}
+                  min="0"
+                  max="10"
+                  className="w-full text-5xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-200 dark:placeholder-gray-700"
+                  placeholder="0"
+                />
+              </div>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50"
+            className="w-full py-5 bg-gray-900 dark:bg-emerald-600 text-white rounded-2xl hover:bg-black dark:hover:bg-emerald-700 transition-all font-black text-xl uppercase tracking-[0.1em] shadow-xl shadow-emerald-500/10 disabled:opacity-50 active:scale-95"
           >
-            {loading ? 'Recording Match...' : 'Record Match'}
+            {loading ? 'Speichere...' : 'Match Bestätigen'}
           </button>
         </form>
       </div>
@@ -230,36 +182,50 @@ export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchP
   );
 }
 
-function renderTeamSelects(
-  teamKey: 'team1' | 'team2',
-  matchType: MatchType,
-  teamState: string[],
-  setTeamState: (next: string[]) => void,
-  players: Player[],
-  slotsOverride?: number
-) {
-  const slots = slotsOverride ?? (matchType === '1v1' ? 1 : matchType === '2v1' && teamKey === 'team2' ? 1 : 2);
+function ModeButton({ label, mode, current, set }: { label: string, mode: MatchType, current: MatchType, set: (m: MatchType) => void }) {
+  const isActive = current === mode;
+  return (
+    <button
+      type="button"
+      onClick={() => set(mode)}
+      className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all border-2 ${isActive
+        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-lg shadow-emerald-500/10'
+        : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
+        }`}
+    >
+      <Users className={`w-5 h-5 mb-2 ${isActive ? 'text-emerald-500' : 'text-gray-400'}`} />
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+    </button>
+  );
+}
+
+function PlayerSelects({ ids, setIds, count, players, ranks }: { ids: string[], setIds: (v: string[]) => void, count: number, players: Player[], ranks: Rank[] }) {
+  const activeIds = ids.slice(0, count);
 
   return (
-    <div className={`grid gap-3 ${slots > 1 ? 'grid-cols-1' : 'grid-cols-1'}`}>
-      {Array.from({ length: slots }).map((_, idx) => (
+    <div className="space-y-4">
+      {Array.from({ length: count }).map((_, idx) => (
         <select
-          key={`${teamKey}-${idx}`}
-          value={teamState[idx] || ''}
+          key={idx}
+          value={activeIds[idx] || ''}
           onChange={(e) => {
-            const next = [...teamState];
+            const next = [...ids];
             next[idx] = e.target.value;
-            setTeamState(next);
+            setIds(next);
           }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-          required
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 text-sm font-bold border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 dark:text-white outline-none appearance-none transition-all cursor-pointer"
         >
-          <option value="">Select Player</option>
-          {players.map((player) => (
-            <option key={player.id} value={player.id}>
-              {player.name} ({player.elo_rating} ELO)
-            </option>
-          ))}
+          <option value="">Spieler wählen...</option>
+          {players
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((p) => {
+              const rank = getRank(p.elo_rating, ranks);
+              return (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({Math.round(p.elo_rating)})
+                </option>
+              );
+            })}
         </select>
       ))}
     </div>

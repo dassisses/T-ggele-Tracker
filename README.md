@@ -1,22 +1,46 @@
-# Apps Team Tögelle Tracker
+# Apps Team Töggle Tracker
 
-Project workspace for a React + TypeScript application with accompanying documentation intended for GitHub Pages. See the documents under `docs/` for detailed workflows, roadmap, and repository information.
+Ein premium Töggle (Tischfussball) Tracker mit Elo-Rating-System, Match-Historie und Statistiken. Jetzt mit Dark Mode und optimierter mobiler Erfahrung.
 
-- [Repository Information](docs/README_RepoInfo.md)
-- [Project Roadmap](docs/README_Roadmap.md)
-- [Workflow Template](docs/README_Template.md)
-- [Session Protocols](docs/Protokolle.md)
+## 📋 Projektstruktur
 
-The application code lives in `project/`. To start local development:
+- **`backend/`** - FastAPI Backend mit SQLite-Datenbank
+- **`frontend/`** - React + TypeScript + Vite Frontend + Tailwind CSS
+- **`render.yaml`** - Infrastruktur-Konfiguration für Render.com
+
+## 🚀 Lokale Entwicklung
+
+Der einfachste Weg ist das `dev.sh` Script im Root-Verzeichnis:
 ```bash
-cd project
-npm install
-npm run dev
+./dev.sh
 ```
 
-## Lokales Hosting (nur JSON-Daten)
-- Alle Daten liegen in einfachen JSON-Dateien unter `project/data/` (`players.json`, `matches.json`). Keine weitere Datenbank, kein Login, keine E-Mail/Passwort nötig – Spieler werden nur über den Namen geführt.
-- App starten: `cd project && npm install && npm run dev` und im Browser den ausgegebenen Localhost-Link öffnen.
-- Daten anpassen: JSON-Dateien direkt bearbeiten oder über die UI neue Spieler/Matches hinzufügen (wird zur Laufzeit im Speicher gehalten).
-- Spielmodi: 1v1, 2v2 und 2v1 (bei 2v1 wird der Elo über Team-Durchschnitt berechnet; Solo-Sieg = doppelter Elo-Gewinn, Team-Sieg = halber Elo-Gewinn; Verluste analog).
-- Persistenz: Änderungen via UI werden im Browser `localStorage` gesichert und bleiben nach Reload erhalten. Die JSON-Dateien dienen als Seeds und werden im Browser nicht überschrieben.
+## 🎮 Features & UI
+
+- **Dark Mode**: Dynamischer Wechsel zwischen Hell- und Dunkel-Themen.
+- **Mobile First**: Optimiert für Browser auf Laptops und Smartphones.
+- **Saison-Archiv**: Saisons abschliessen, archivieren und historische Statistiken jederzeit einsehen.
+- **Dynamisches Elo**: Voll konfigurierbare Punkte-Logik (Underdog-Bonus, Tor-Differenz-Multiplier, asymmetrischer Schutz).
+- **Ränge**: Frei definierbare Ränge basierend auf Elo (vom "Employed" bis zum "Chief of Unemployment").
+
+## ☁️ Deployment auf Render.com
+
+Dieses Projekt ist für ein **One-Click-Deployment** auf Render optimiert.
+
+### Schritte:
+1. **Repository**: Pushe den Code auf dein GitHub/GitLab Repository.
+2. **Render Account**: Logge dich bei [Render](https://render.com) ein.
+3. **Blueprint**: Klicke auf "New" -> "Blueprint".
+4. **Link**: Wähle dein Repository aus.
+5. **Configuration**: Render erkennt die `render.yaml` automatisch.
+   - Es wird ein **Web Service** erstellt.
+   - Es wird ein **Persistent Disk** (1GB) erstellt, damit die SQLite Datenbank (`toeggele.db`) bei Neustarts nicht gelöscht wird.
+6. **Deploy**: Bestätige das Deployment.
+
+**Wichtig**: Die `render.yaml` kümmert sich um den Build des Frontends (`npm run build`) und serviert dieses direkt über das FastAPI Backend. Du brauchst keine separate Static Site.
+
+## 🛠️ Technologie-Stack
+
+**Backend:** FastAPI, SQLAlchemy (SQLite), Pydantic, Gunicorn
+**Frontend:** React 18, TypeScript, Vite, TailwindCSS, Lucide Icons
+**Typografie:** Outfit (Google Fonts)

@@ -1,5 +1,22 @@
 services:
   - type: web
     name: toeggele-tracker
-    env: docker
-    plan: free
+    env: python
+    buildCommand: |
+      # Build Frontend
+      cd frontend
+      npm install
+      npm run build
+      cd ..
+      # Install Backend deps
+      pip install -r backend/requirements.txt
+    startCommand: |
+      cd backend
+      gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/toeggele.db
+    disk:
+      name: toeggele-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

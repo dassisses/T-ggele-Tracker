@@ -49,5 +49,47 @@ export const api = {
             body: JSON.stringify(settings),
         });
         if (!res.ok) throw new Error('Failed to update settings');
+    },
+    // Ranks
+    getRanks: async (): Promise<any[]> => {
+        const res = await fetch(`${API_Base}/ranks`);
+        if (!res.ok) throw new Error('Failed to fetch ranks');
+        return res.json();
+    },
+    createRank: async (rank: { name: string, min_elo: number, color: string }): Promise<void> => {
+        const res = await fetch(`${API_Base}/ranks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rank),
+        });
+        if (!res.ok) throw new Error('Failed to create rank');
+    },
+    deleteRank: async (id: string): Promise<void> => {
+        const res = await fetch(`${API_Base}/ranks/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete rank');
+    },
+    // Seasons
+    archiveSeason: async (name: string): Promise<void> => {
+        const res = await fetch(`${API_Base}/seasons/archive`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name }),
+        });
+        if (!res.ok) throw new Error('Failed to archive season');
+    },
+    getSeasons: async (): Promise<any[]> => {
+        const res = await fetch(`${API_Base}/seasons`);
+        if (!res.ok) throw new Error('Failed to fetch seasons');
+        return res.json();
+    },
+    getSeasonPlayers: async (id: string): Promise<Player[]> => {
+        const res = await fetch(`${API_Base}/seasons/${id}/players`);
+        if (!res.ok) throw new Error('Failed to fetch season players');
+        return res.json();
+    },
+    getSeasonMatches: async (id: string): Promise<Match[]> => {
+        const res = await fetch(`${API_Base}/seasons/${id}/matches`);
+        if (!res.ok) throw new Error('Failed to fetch season matches');
+        return res.json();
     }
 };

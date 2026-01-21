@@ -40,22 +40,22 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
   }, [players]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
-          title="Total Players"
+          title="Gesamt Spieler"
           value={stats.totalPlayers || 0}
           icon={Award}
           color="emerald"
         />
         <StatCard
-          title="Matches Played"
+          title="Gespielte Matches"
           value={stats.totalMatches || 0}
           icon={Target}
           color="blue"
         />
         <StatCard
-          title="Avg Goals/Match"
+          title="Tore pro Match"
           value={stats.avgGoals}
           icon={Flame}
           color="orange"
@@ -63,46 +63,57 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-xl font-bold text-gray-900">Top Players</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Top Spieler</h2>
           </div>
           <div className="space-y-3">
             {topPlayers.map((player, index) => (
               <div
                 key={player.id}
                 onClick={() => onPlayerClick(player.id)}
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-gray-600"
               >
-                <div className="flex items-center space-x-3">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-white ${
-                    index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : index === 2 ? 'bg-amber-600' : 'bg-gray-300'
-                  }`}>
+                <div className="flex items-center space-x-4">
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-white shadow-sm ${index === 0 ? 'bg-yellow-500 ring-4 ring-yellow-100 dark:ring-yellow-900/30' :
+                      index === 1 ? 'bg-gray-400 ring-4 ring-gray-100 dark:ring-gray-700/30' :
+                        index === 2 ? 'bg-amber-600 ring-4 ring-amber-100 dark:ring-amber-900/30' :
+                          'bg-gray-200 text-gray-500'
+                    }`}>
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">{player.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {player.matches_won}W - {player.matches_lost}L
+                    <div className="font-bold text-gray-900 dark:text-white uppercase tracking-tight">{player.name}</div>
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {player.matches_won} Siege • {player.matches_lost} Niederlagen
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-lg text-emerald-600">{player.elo_rating}</div>
-                  <div className="text-xs text-gray-500">ELO</div>
+                  <div className="font-black text-xl text-emerald-600 dark:text-emerald-400 leading-none">{Math.round(player.elo_rating)}</div>
+                  <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase mt-1">ELO</div>
                 </div>
               </div>
             ))}
+            {topPlayers.length === 0 && <p className="text-center text-gray-400 py-8 italic text-sm">Noch keine Spieler registriert.</p>}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Matches</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Letzte Spiele</h2>
+          </div>
           <div className="space-y-3">
             {recentMatches.map((match) => (
               <MatchCard key={match.id} match={match} players={playersById} />
             ))}
+            {recentMatches.length === 0 && <p className="text-center text-gray-400 py-8 italic text-sm">Noch keine Matches aufgezeichnet.</p>}
           </div>
         </div>
       </div>
@@ -112,47 +123,54 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
 
 function StatCard({ title, value, icon: Icon, color }: any) {
   const colorClasses = {
-    emerald: 'bg-emerald-50 text-emerald-600',
-    blue: 'bg-blue-50 text-blue-600',
-    orange: 'bg-orange-50 text-orange-600',
+    emerald: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
+    blue: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    orange: 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{title}</p>
+          <p className="text-3xl font-black text-gray-900 dark:text-white mt-2 leading-none">{value}</p>
         </div>
-        <div className={`p-3 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-4 rounded-2xl ${colorClasses[color as keyof typeof colorClasses]}`}>
+          <Icon className="w-7 h-7" />
         </div>
       </div>
     </div>
   );
 }
 
+function MatchHistory({ players, matches }: any) {
+  return <History />
+}
+
 function MatchCard({ match, players }: { match: Match; players: Record<string, Player> }) {
-  const teamName = (ids: string[]) =>
-    ids.map((id) => players[id]?.name || 'Unbekannt').join(' & ');
-  const team1Name = teamName(match.team1_ids);
-  const team2Name = teamName(match.team2_ids);
+  const getTeamNames = (ids: string[]) =>
+    ids.map((id) => players[id]?.name || '...').join(' & ');
+
+  const team1Name = getTeamNames(match.team1_ids);
+  const team2Name = getTeamNames(match.team2_ids);
   const team1Won = match.winner_ids.some((id) => match.team1_ids.includes(id));
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
-      <div className="flex items-center space-x-3 flex-1">
-        <div className={`text-sm font-semibold ${team1Won ? 'text-emerald-600' : 'text-gray-600'}`}>
-          {team1Name || 'Team 1'}
+    <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700">
+      <div className="grid grid-cols-3 gap-2 items-center flex-1">
+        <div className={`text-xs sm:text-sm font-bold truncate ${team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
+          {team1Name}
         </div>
-        <div className="text-lg font-bold text-gray-900">
-          {match.score1} - {match.score2}
+        <div className="text-center">
+          <span className="font-mono font-black text-lg dark:text-white px-3 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+            {match.score1}:{match.score2}
+          </span>
         </div>
-        <div className={`text-sm font-semibold ${!team1Won ? 'text-emerald-600' : 'text-gray-600'}`}>
-          {team2Name || 'Team 2'}
+        <div className={`text-xs sm:text-sm font-bold truncate text-right ${!team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>
+          {team2Name}
         </div>
       </div>
-      <div className="text-xs text-gray-500">
+      <div className="ml-4 text-[10px] font-bold text-gray-400 dark:text-gray-600 whitespace-nowrap hidden sm:block">
         {new Date(match.played_at).toLocaleDateString()}
       </div>
     </div>

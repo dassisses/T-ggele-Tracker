@@ -5,27 +5,34 @@ import Leaderboard from './components/Leaderboard';
 import MatchHistory from './components/MatchHistory';
 import AddMatch from './components/AddMatch';
 import PlayerProfile from './components/PlayerProfile';
-import { Match, NewMatchPayload, Player, GameSettings } from './types';
+import SeasonDetail from './components/SeasonDetail';
+import { Match, NewMatchPayload, Player, GameSettings, Rank } from './types';
 import Admin from './components/Admin';
 import { api } from './lib/api';
+import { DEFAULT_RANKS } from './utils/ranks';
+import { ThemeProvider } from './context/ThemeContext';
 
-function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<{ id: string, name: string } | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [ranks, setRanks] = useState<Rank[]>(DEFAULT_RANKS);
   const [settings, setSettings] = useState<GameSettings>({ kFactor: 32 });
 
   const loadData = async () => {
     try {
-      const [p, m, s] = await Promise.all([
+      const [p, m, s, r] = await Promise.all([
         api.getPlayers(),
         api.getMatches(),
-        api.getSettings()
+        api.getSettings(),
+        api.getRanks()
       ]);
       setPlayers(p);
       setMatches(m);
       setSettings(s);
+      if (r && r.length > 0) setRanks(r);
     } catch (e) {
       console.error("Failed to load data", e);
     }
@@ -43,6 +50,11 @@ function App() {
   function handleBackToLeaderboard() {
     setSelectedPlayerId(null);
     setCurrentView('leaderboard');
+  }
+
+  function handleViewSeason(id: string, name: string) {
+    setSelectedSeason({ id, name });
+    setCurrentView('season-detail');
   }
 
   async function handleAddPlayer(name: string) {
@@ -65,10 +77,6 @@ function App() {
     }
   }
 
-  function handleResetData() {
-    alert('Reset ist im Server-Modus deaktiviert.');
-  }
-
   async function handleUpdateSettings(newSettings: GameSettings) {
     try {
       await api.updateSettings(newSettings);
@@ -89,8 +97,12 @@ function App() {
     }
   }
 
+  const handleRefresh = async () => {
+    await loadData();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'dashboard' && (
@@ -101,7 +113,7 @@ function App() {
           />
         )}
         {currentView === 'leaderboard' && (
-          <Leaderboard players={players} onPlayerClick={handlePlayerClick} />
+          <Leaderboard players={players} onPlayerClick={handlePlayerClick} ranks={ranks} />
         )}
         {currentView === 'history' && (
           <MatchHistory players={players} matches={matches} />
@@ -111,6 +123,7 @@ function App() {
             players={players}
             onAddPlayer={handleAddPlayer}
             onAddMatch={handleAddMatch}
+            ranks={ranks}
           />
         )}
         {currentView === 'player-profile' && selectedPlayerId && (
@@ -121,18 +134,38 @@ function App() {
             onBack={handleBackToLeaderboard}
           />
         )}
+        {currentView === 'season-detail' && selectedSeason && (
+          <SeasonDetail
+            seasonId={selectedSeason.id}
+            seasonName={selectedSeason.name}
+            ranks={ranks}
+            onBack={() => setCurrentView('admin')}
+            onPlayerClick={handlePlayerClick}
+          />
+        )}
         {currentView === 'admin' && (
           <Admin
             players={players}
             settings={settings}
+            ranks={ranks}
             onAddPlayer={handleAddPlayer}
             onDeletePlayer={handleDeletePlayer}
-            onResetData={handleResetData}
+            onResetData={() => { }}
             onUpdateSettings={handleUpdateSettings}
+            onRefresh={handleRefresh}
+            onViewSeason={handleViewSeason}
           />
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

@@ -38,8 +38,32 @@ export interface NewMatchPayload {
   score2: number;
 }
 
+export interface Rank {
+  id: string;
+  name: string;
+  min_elo: number;
+  color: string;
+  order: number;
+}
+
+export interface SeasonArchive {
+  id: string;
+  name: string;
+  archived_at: string;
+}
+
+export interface EloConfig {
+  goal_diff_bonus_percent: number;
+  underdog_bonus_percent: number;
+  underdog_loss_divider: number;
+  match_type_1v1_mult: number;
+  match_type_2v2_mult: number;
+  match_type_2v1_mult: number;
+}
+
 export interface GameSettings {
   kFactor: number;
   adminPassword?: string;
+  eloConfig?: EloConfig;
 }
 
