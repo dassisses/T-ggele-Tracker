@@ -25,19 +25,24 @@ Der einfachste Weg ist das `dev.sh` Script im Root-Verzeichnis:
 
 ## ☁️ Deployment auf Render.com
 
-Dieses Projekt ist für ein **One-Click-Deployment** auf Render optimiert.
+Es gibt zwei Wege, die App auf Render zu hosten:
 
-### Schritte:
-1. **Repository**: Pushe den Code auf dein GitHub/GitLab Repository.
-2. **Render Account**: Logge dich bei [Render](https://render.com) ein.
-3. **Blueprint**: Klicke auf "New" -> "Blueprint".
-4. **Link**: Wähle dein Repository aus.
-5. **Configuration**: Render erkennt die `render.yaml` automatisch.
-   - Es wird ein **Web Service** erstellt.
-   - Es wird ein **Persistent Disk** (1GB) erstellt, damit die SQLite Datenbank (`toeggele.db`) bei Neustarts nicht gelöscht wird.
-6. **Deploy**: Bestätige das Deployment.
+### Option A: Kostenloser Plan (Free Tier - Manuelles Setup)
+*Hinweis: Im Free Tier werden Daten bei jedem Server-Neustart/Update gelöscht (keine Persistenz).*
 
-**Wichtig**: Die `render.yaml` kümmert sich um den Build des Frontends (`npm run build`) und serviert dieses direkt über das FastAPI Backend. Du brauchst keine separate Static Site.
+1. Klicke auf Render auf **"New" -> "Web Service"** und verbinde dein Repository.
+2. **Environment**: `Python`
+3. **Build Command**: `cd frontend && npm install && npm run build && cd .. && pip install -r backend/requirements.txt`
+4. **Start Command**: `cd backend && gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:$PORT`
+5. **Advanced**: Füge eine Umgebungsvariable hinzu: `DATABASE_PATH` = `./toeggele.db`
+6. **Instance Type**: Wähle `Free`.
+
+### Option B: Dauerhafter Speicher (via Blueprint - Kostenpflichtig)
+*Dieses Setup nutzt einen Persistent Disk (ca. $1/Monat), damit deine Daten NIE verloren gehen.*
+
+1. Pushe den Code in dein Repository.
+2. Klicke auf Render auf **"New" -> "Blueprint"**.
+3. Verbinde dein Repository. Render erkennt die `render.yaml` automatisch und richtet alles (inkl. Festplatte) fertig ein.
 
 ## 🛠️ Technologie-Stack
 
