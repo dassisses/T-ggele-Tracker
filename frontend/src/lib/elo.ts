@@ -1,11 +1,10 @@
-const K_FACTOR = 32;
-
 export function calculateEloChange(
   winnerRating: number,
-  loserRating: number
+  loserRating: number,
+  kFactor: number = 32
 ): number {
   const expectedWinner = 1 / (1 + Math.pow(10, (loserRating - winnerRating) / 400));
-  return Math.round(K_FACTOR * (1 - expectedWinner));
+  return Math.round(kFactor * (1 - expectedWinner));
 }
 
 export function calculateExpectedScore(

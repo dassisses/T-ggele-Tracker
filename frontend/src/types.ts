@@ -29,6 +29,7 @@ export interface Match {
   created_at: string;
 }
 
+
 export interface NewMatchPayload {
   matchType: MatchType;
   team1Ids: string[];
@@ -36,3 +37,9 @@ export interface NewMatchPayload {
   score1: number;
   score2: number;
 }
+
+export interface GameSettings {
+  kFactor: number;
+  adminPassword?: string;
+}
+

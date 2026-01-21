@@ -1,4 +1,4 @@
-import { Trophy, Users, History, Plus } from 'lucide-react';
+import { Trophy, Users, History, Plus, Settings } from 'lucide-react';
 
 interface NavigationProps {
   currentView: string;
@@ -11,6 +11,7 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
     { id: 'leaderboard', label: 'Leaderboard', icon: Users },
     { id: 'history', label: 'Match History', icon: History },
     { id: 'add-match', label: 'New Match', icon: Plus },
+    { id: 'admin', label: 'Admin', icon: Settings },
   ];
 
   return (
@@ -28,11 +29,10 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
                 <button
                   key={item.id}
                   onClick={() => onViewChange(item.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    currentView === item.id
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${currentView === item.id
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="hidden sm:inline font-medium">{item.label}</span>

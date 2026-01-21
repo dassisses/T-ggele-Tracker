@@ -5,7 +5,7 @@ import { Player, NewMatchPayload, MatchType } from '../types';
 interface AddMatchProps {
   players: Player[];
   onAddPlayer: (name: string) => void;
-  onAddMatch: (payload: NewMatchPayload) => { ok: boolean; error?: string };
+  onAddMatch: (payload: NewMatchPayload) => Promise<{ ok: boolean; error?: string }>;
 }
 
 export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchProps) {
@@ -78,7 +78,7 @@ export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchP
     const s1 = parseInt(score1, 10);
     const s2 = parseInt(score2, 10);
 
-    const result = onAddMatch({ matchType, team1Ids, team2Ids, score1: s1, score2: s2 });
+    const result = await onAddMatch({ matchType, team1Ids, team2Ids, score1: s1, score2: s2 });
 
     if (!result.ok) {
       setMessage(result.error || 'Fehler beim Speichern.');
@@ -139,98 +139,95 @@ export default function AddMatch({ players, onAddPlayer, onAddMatch }: AddMatchP
             <label className="block text-sm font-medium text-gray-700 mb-2">Match Type</label>
             <div className="flex space-x-4">
               <button
-            type="button"
-            onClick={() => setMatchType('1v1')}
-            className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${
-              matchType === '1v1'
-                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                : 'border-gray-300 text-gray-600 hover:border-gray-400'
-            }`}
-          >
-            <Users className="w-5 h-5 mx-auto mb-1" />
-            Singles
-          </button>
+                type="button"
+                onClick={() => setMatchType('1v1')}
+                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '1v1'
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                  }`}
+              >
+                <Users className="w-5 h-5 mx-auto mb-1" />
+                Singles
+              </button>
+              <button
+                type="button"
+                onClick={() => setMatchType('2v2')}
+                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '2v2'
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                  }`}
+              >
+                <Users className="w-5 h-5 mx-auto mb-1" />
+                2 vs 2
+              </button>
+              <button
+                type="button"
+                onClick={() => setMatchType('2v1')}
+                className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${matchType === '2v1'
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
+                    : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                  }`}
+              >
+                <Users className="w-5 h-5 mx-auto mb-1" />
+                2 vs 1
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {matchType === '2v1' ? 'Team (2 Spieler)' : 'Team 1'}
+              </label>
+              {renderTeamSelects('team1', matchType, team1Players, setTeam1Players, players)}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {matchType === '2v1' ? 'Einzelspieler' : 'Team 2'}
+              </label>
+              {renderTeamSelects('team2', matchType, team2Players, setTeam2Players, players, matchType === '2v1' ? 1 : 2)}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 1</label>
+              <input
+                type="number"
+                placeholder="Score"
+                value={score1}
+                onChange={(e) => setScore1(e.target.value)}
+                min="0"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 2</label>
+              <input
+                type="number"
+                placeholder="Score"
+                value={score2}
+                onChange={(e) => setScore2(e.target.value)}
+                min="0"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                required
+              />
+            </div>
+          </div>
+
           <button
-            type="button"
-            onClick={() => setMatchType('2v2')}
-            className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${
-              matchType === '2v2'
-                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                : 'border-gray-300 text-gray-600 hover:border-gray-400'
-            }`}
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50"
           >
-            <Users className="w-5 h-5 mx-auto mb-1" />
-            2 vs 2
+            {loading ? 'Recording Match...' : 'Record Match'}
           </button>
-          <button
-            type="button"
-            onClick={() => setMatchType('2v1')}
-            className={`flex-1 py-3 px-4 rounded-lg border-2 transition-colors ${
-              matchType === '2v1'
-                ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                : 'border-gray-300 text-gray-600 hover:border-gray-400'
-            }`}
-          >
-            <Users className="w-5 h-5 mx-auto mb-1" />
-            2 vs 1
-          </button>
-        </div>
+        </form>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {matchType === '2v1' ? 'Team (2 Spieler)' : 'Team 1'}
-          </label>
-          {renderTeamSelects('team1', matchType, team1Players, setTeam1Players, players)}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {matchType === '2v1' ? 'Einzelspieler' : 'Team 2'}
-          </label>
-          {renderTeamSelects('team2', matchType, team2Players, setTeam2Players, players, matchType === '2v1' ? 1 : 2)}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 1</label>
-          <input
-            type="number"
-            placeholder="Score"
-            value={score1}
-            onChange={(e) => setScore1(e.target.value)}
-            min="0"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Score Team 2</label>
-          <input
-            type="number"
-            placeholder="Score"
-            value={score2}
-            onChange={(e) => setScore2(e.target.value)}
-            min="0"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            required
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50"
-      >
-        {loading ? 'Recording Match...' : 'Record Match'}
-      </button>
-    </form>
-  </div>
-</div>
-);
+    </div>
+  );
 }
 
 function renderTeamSelects(
