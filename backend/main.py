@@ -4,17 +4,52 @@ import math
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 import models, database
 
-app = FastAPI()
+# Lifespan handler (replaces deprecated on_event)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    db = database.SessionLocal()
+    try:
+        init_ranks(db)
+        # Migrations
+        try:
+            db.execute("SELECT elo_config FROM settings LIMIT 1")
+        except:
+            try:
+                db.execute("ALTER TABLE settings ADD COLUMN elo_config TEXT")
+                db.commit()
+                default_conf = json.dumps({
+                    "goal_diff_bonus_percent": 0,
+                    "underdog_bonus_percent": 0,
+                    "underdog_loss_divider": 1.0,
+                    "match_type_1v1_mult": 1.0,
+                    "match_type_2v2_mult": 1.0,
+                    "match_type_2v1_mult": 1.0
+                })
+                db.execute(f"UPDATE settings SET elo_config = '{default_conf}'")
+                db.commit()
+            except:
+                pass
+        get_settings(db)
+    finally:
+        db.close()
+    
+    yield  # Application runs
+    
+    # Shutdown (if needed)
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,8 +80,7 @@ class PlayerResponse(BaseModel):
     created_at: str
     updated_at: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class NewMatchPayload(BaseModel):
     matchType: str
@@ -67,8 +101,7 @@ class MatchResponse(BaseModel):
     played_at: str
     created_at: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class EloConfig(BaseModel):
     goal_diff_bonus_percent: int = 0
@@ -95,16 +128,14 @@ class RankResponse(BaseModel):
     color: str
     order: int
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SeasonArchiveResponse(BaseModel):
     id: str
     name: str
     archived_at: str
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Logic helpers
 def get_settings(db: Session):
@@ -129,35 +160,6 @@ def init_ranks(db: Session):
             db_rank = models.Rank(id=str(uuid.uuid4()), **r)
             db.add(db_rank)
         db.commit()
-
-# Startup event
-@app.on_event("startup")
-def on_startup():
-    db = database.SessionLocal()
-    try:
-        init_ranks(db)
-        # Migrations
-        try:
-            db.execute("SELECT elo_config FROM settings LIMIT 1")
-        except:
-            try:
-                db.execute("ALTER TABLE settings ADD COLUMN elo_config TEXT")
-                db.commit()
-                default_conf = json.dumps({
-                    "goal_diff_bonus_percent": 0,
-                    "underdog_bonus_percent": 0,
-                    "underdog_loss_divider": 1.0,
-                    "match_type_1v1_mult": 1.0,
-                    "match_type_2v2_mult": 1.0,
-                    "match_type_2v1_mult": 1.0
-                })
-                db.execute(f"UPDATE settings SET elo_config = '{default_conf}'")
-                db.commit()
-            except:
-                pass
-        get_settings(db)
-    finally:
-        db.close()
 
 # API Endpoints
 @app.get("/api/settings", response_model=GameSettings)
