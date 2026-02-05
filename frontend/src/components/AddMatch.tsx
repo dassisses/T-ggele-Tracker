@@ -81,18 +81,21 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
   }
 
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 space-y-8 border border-gray-100 dark:border-gray-700">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl">
-            <Trophy className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+    <div className="max-w-3xl mx-auto animate-fade-in pb-12">
+      <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl p-10 sm:p-12 space-y-10 border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-5">
+          <div className="p-4 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl shadow-inner">
+            <Trophy className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Match eintragen</h1>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Match eintragen</h1>
+            <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mt-1">SCHREIB GESCHICHTE.</p>
+          </div>
         </div>
 
         {message && (
           <div className={`p-4 rounded-2xl flex items-center gap-3 animate-fade-in ${message.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30' :
-              'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
+            'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
             }`}>
             {message.type === 'error' ? <AlertTriangle className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
             <span className="font-bold text-sm">{message.text}</span>
@@ -101,8 +104,8 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
 
         <form onSubmit={handleSubmitMatch} className="space-y-10">
           <div>
-            <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4">Spielmodus wählen</label>
-            <div className="grid grid-cols-3 gap-3">
+            <label className="block text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] mb-6 text-center">Spielmodus wählen</label>
+            <div className="grid grid-cols-3 gap-5">
               <ModeButton label="1 vs 1" mode="1v1" current={matchType} set={setMatchType} />
               <ModeButton label="2 vs 2" mode="2v2" current={matchType} set={setMatchType} />
               <ModeButton label="2 vs 1" mode="2v1" current={matchType} set={setMatchType} />
@@ -125,15 +128,15 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
                 players={players}
                 ranks={ranks}
               />
-              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
-                <label className="absolute -top-3 left-3 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Score A</label>
+              <div className="relative pt-8 border-t-2 border-gray-50 dark:border-gray-700/50">
+                <label className="absolute -top-3.5 left-6 bg-white dark:bg-gray-800 px-3 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-2 border-emerald-500/20 rounded-full">Score A</label>
                 <input
                   type="number"
                   value={score1}
                   onChange={(e) => setScore1(e.target.value)}
                   min="0"
                   max="10"
-                  className="w-full text-5xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-200 dark:placeholder-gray-700"
+                  className="w-full text-7xl font-black text-center py-6 bg-gray-50 dark:bg-gray-900/50 rounded-[2rem] border-4 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner"
                   placeholder="0"
                 />
               </div>
@@ -154,15 +157,15 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
                 players={players}
                 ranks={ranks}
               />
-              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
-                <label className="absolute -top-3 left-3 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Score B</label>
+              <div className="relative pt-8 border-t-2 border-gray-50 dark:border-gray-700/50">
+                <label className="absolute -top-3.5 left-6 bg-white dark:bg-gray-800 px-3 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-2 border-emerald-500/20 rounded-full">Score B</label>
                 <input
                   type="number"
                   value={score2}
                   onChange={(e) => setScore2(e.target.value)}
                   min="0"
                   max="10"
-                  className="w-full text-5xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-200 dark:placeholder-gray-700"
+                  className="w-full text-7xl font-black text-center py-6 bg-gray-50 dark:bg-gray-900/50 rounded-[2rem] border-4 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner"
                   placeholder="0"
                 />
               </div>
@@ -172,9 +175,13 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-5 bg-gray-900 dark:bg-emerald-600 text-white rounded-2xl hover:bg-black dark:hover:bg-emerald-700 transition-all font-black text-xl uppercase tracking-[0.1em] shadow-xl shadow-emerald-500/10 disabled:opacity-50 active:scale-95"
+            className="w-full py-6 bg-gray-900 dark:bg-emerald-600 text-white rounded-[1.5rem] hover:bg-black dark:hover:bg-emerald-700 transition-all font-black text-2xl uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 disabled:opacity-50 active:scale-95 group"
           >
-            {loading ? 'Speichere...' : 'Match Bestätigen'}
+            {loading ? 'Speichere...' : (
+              <span className="flex items-center justify-center gap-3">
+                <CheckCircle className="w-7 h-7 group-hover:scale-125 transition-transform" /> Match Bestätigen
+              </span>
+            )}
           </button>
         </form>
       </div>
@@ -188,13 +195,13 @@ function ModeButton({ label, mode, current, set }: { label: string, mode: MatchT
     <button
       type="button"
       onClick={() => set(mode)}
-      className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all border-2 ${isActive
-        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-lg shadow-emerald-500/10'
-        : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
+      className={`flex flex-col items-center justify-center p-6 rounded-[2rem] transition-all border-4 ${isActive
+        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-xl shadow-emerald-500/10 scale-105'
+        : 'bg-white dark:bg-gray-800 border-gray-50 dark:border-gray-700 text-gray-300 hover:border-gray-200 dark:hover:border-gray-600'
         }`}
     >
-      <Users className={`w-5 h-5 mb-2 ${isActive ? 'text-emerald-500' : 'text-gray-400'}`} />
-      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+      <Users className={`w-8 h-8 mb-3 ${isActive ? 'text-emerald-500' : 'text-gray-400'}`} />
+      <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
     </button>
   );
 }
@@ -213,7 +220,7 @@ function PlayerSelects({ ids, setIds, count, players, ranks }: { ids: string[], 
             next[idx] = e.target.value;
             setIds(next);
           }}
-          className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 text-sm font-bold border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 dark:text-white outline-none appearance-none transition-all cursor-pointer"
+          className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 text-lg font-black border-2 border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white outline-none appearance-none transition-all cursor-pointer shadow-sm"
         >
           <option value="">Spieler wählen...</option>
           {players
