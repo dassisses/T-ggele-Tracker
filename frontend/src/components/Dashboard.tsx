@@ -63,12 +63,12 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-4 mb-8">
             <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
-              <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Top Spieler</h2>
+            <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Top Spieler</h2>
           </div>
           <div className="space-y-3">
             {topPlayers.map((player, index) => (
@@ -86,15 +86,15 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
                     {index + 1}
                   </div>
                   <div>
-                    <div className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight leading-tight">{player.name}</div>
-                    <div className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">
+                    <div className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight leading-tight">{player.name}</div>
+                    <div className="text-xs font-bold text-gray-400 dark:text-gray-500 mt-0.5">
                       {player.matches_won}W – {player.matches_lost}L
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-black text-3xl text-emerald-600 dark:text-emerald-400 leading-none tracking-tighter">{Math.round(player.elo_rating)}</div>
-                  <div className="text-[11px] font-black text-gray-400 dark:text-gray-600 uppercase mt-1 tracking-widest">ELO</div>
+                  <div className="font-black text-2xl text-emerald-600 dark:text-emerald-400 leading-none tracking-tighter">{Math.round(player.elo_rating)}</div>
+                  <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mt-1 tracking-widest">ELO</div>
                 </div>
               </div>
             ))}
@@ -102,12 +102,12 @@ export default function Dashboard({ players, matches, onPlayerClick }: Dashboard
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-4 mb-8">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-              <History className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Letzte Spiele</h2>
+            <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Letzte Spiele</h2>
           </div>
           <div className="space-y-3">
             {recentMatches.map((match) => (
@@ -129,14 +129,14 @@ function StatCard({ title, value, icon: Icon, color }: any) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl hover:translate-y-[-2px] group">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl hover:translate-y-[-2px] group">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-3">{title}</p>
-          <p className="text-5xl font-black text-gray-900 dark:text-white leading-none tracking-tighter">{value}</p>
+          <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-2">{title}</p>
+          <p className="text-3xl font-black text-gray-900 dark:text-white leading-none tracking-tighter">{value}</p>
         </div>
-        <div className={`p-6 rounded-3xl shadow-lg transform transition-transform group-hover:scale-110 ${colorClasses[color as keyof typeof colorClasses]}`}>
-          <Icon className="w-9 h-9" />
+        <div className={`p-4 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 ${colorClasses[color as keyof typeof colorClasses]}`}>
+          <Icon className="w-7 h-7" />
         </div>
       </div>
     </div>
@@ -152,17 +152,17 @@ function MatchCard({ match, players }: { match: Match; players: Record<string, P
   const team1Won = match.winner_ids.some((id) => match.team1_ids.includes(id));
 
   return (
-    <div className="flex items-center justify-between p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border-2 border-transparent hover:border-blue-500/20 transition-all shadow-sm group">
-      <div className="grid grid-cols-3 gap-6 items-center flex-1">
-        <div className={`text-sm sm:text-lg font-black uppercase tracking-tight truncate ${team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-600'}`}>
+    <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border-2 border-transparent hover:border-blue-500/20 transition-all shadow-sm group">
+      <div className="grid grid-cols-3 gap-4 items-center flex-1">
+        <div className={`text-xs sm:text-base font-black uppercase tracking-tight truncate ${team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-600'}`}>
           {team1Name}
         </div>
         <div className="text-center">
-          <span className="font-mono font-black text-2xl dark:text-white px-5 py-2 bg-white dark:bg-gray-800 rounded-xl shadow-md border-2 border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform inline-block">
+          <span className="font-mono font-black text-xl dark:text-white px-4 py-1.5 bg-white dark:bg-gray-800 rounded-lg shadow-md border-2 border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform inline-block">
             {match.score1}:{match.score2}
           </span>
         </div>
-        <div className={`text-sm sm:text-lg font-black uppercase tracking-tight truncate text-right ${!team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-600'}`}>
+        <div className={`text-xs sm:text-base font-black uppercase tracking-tight truncate text-right ${!team1Won ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-600'}`}>
           {team2Name}
         </div>
       </div>

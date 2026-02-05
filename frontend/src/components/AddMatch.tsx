@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Users, AlertTriangle, CheckCircle, Trophy, UserPlus } from 'lucide-react';
-import { Player, NewMatchPayload, MatchType, Rank } from '../types';
-import { getRank } from '../utils/ranks';
+import { Player, NewMatchPayload, MatchType } from '../types';
 
 interface AddMatchProps {
   players: Player[];
   onAddPlayer: (name: string) => void;
   onAddMatch: (payload: NewMatchPayload) => Promise<{ ok: boolean; error?: string }>;
-  ranks: Rank[];
 }
 
-export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) {
+export default function AddMatch({ players, onAddMatch }: AddMatchProps) {
   const [matchType, setMatchType] = useState<MatchType>('1v1');
   const [team1Players, setTeam1Players] = useState(['', '']);
   const [team2Players, setTeam2Players] = useState(['', '']);
@@ -82,14 +80,14 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in pb-12">
-      <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl p-10 sm:p-12 space-y-10 border border-gray-100 dark:border-gray-700">
-        <div className="flex items-center gap-5">
-          <div className="p-4 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl shadow-inner">
-            <Trophy className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8 border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl shadow-inner">
+            <Trophy className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Match eintragen</h1>
-            <p className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mt-1">SCHREIB GESCHICHTE.</p>
+            <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Match eintragen</h1>
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">Schreib Geschichte.</p>
           </div>
         </div>
 
@@ -104,8 +102,8 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
 
         <form onSubmit={handleSubmitMatch} className="space-y-10">
           <div>
-            <label className="block text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] mb-6 text-center">Spielmodus wählen</label>
-            <div className="grid grid-cols-3 gap-5">
+            <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 text-center">Spielmodus wählen</label>
+            <div className="grid grid-cols-3 gap-4">
               <ModeButton label="1 vs 1" mode="1v1" current={matchType} set={setMatchType} />
               <ModeButton label="2 vs 2" mode="2v2" current={matchType} set={setMatchType} />
               <ModeButton label="2 vs 1" mode="2v1" current={matchType} set={setMatchType} />
@@ -126,17 +124,16 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
                 setIds={setTeam1Players}
                 count={matchType === '2v1' || matchType === '2v2' ? 2 : 1}
                 players={players}
-                ranks={ranks}
               />
-              <div className="relative pt-8 border-t-2 border-gray-50 dark:border-gray-700/50">
-                <label className="absolute -top-3.5 left-6 bg-white dark:bg-gray-800 px-3 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-2 border-emerald-500/20 rounded-full">Score A</label>
+              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
+                <label className="absolute -top-3 left-4 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest border border-emerald-500/20 rounded-full">Score A</label>
                 <input
                   type="number"
                   value={score1}
                   onChange={(e) => setScore1(e.target.value)}
                   min="0"
                   max="10"
-                  className="w-full text-7xl font-black text-center py-6 bg-gray-50 dark:bg-gray-900/50 rounded-[2rem] border-4 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner"
+                  className="w-full text-4xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner overflow-hidden"
                   placeholder="0"
                 />
               </div>
@@ -155,17 +152,16 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
                 setIds={setTeam2Players}
                 count={matchType === '2v2' ? 2 : 1}
                 players={players}
-                ranks={ranks}
               />
-              <div className="relative pt-8 border-t-2 border-gray-50 dark:border-gray-700/50">
-                <label className="absolute -top-3.5 left-6 bg-white dark:bg-gray-800 px-3 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-2 border-emerald-500/20 rounded-full">Score B</label>
+              <div className="relative pt-6 border-t border-gray-100 dark:border-gray-700/50">
+                <label className="absolute -top-3 left-4 bg-white dark:bg-gray-800 px-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest border border-emerald-500/20 rounded-full">Score B</label>
                 <input
                   type="number"
                   value={score2}
                   onChange={(e) => setScore2(e.target.value)}
                   min="0"
                   max="10"
-                  className="w-full text-7xl font-black text-center py-6 bg-gray-50 dark:bg-gray-900/50 rounded-[2rem] border-4 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner"
+                  className="w-full text-4xl font-black text-center py-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border-2 border-transparent focus:border-emerald-500 dark:text-white outline-none transition-all placeholder-gray-100 dark:placeholder-gray-700 shadow-inner overflow-hidden"
                   placeholder="0"
                 />
               </div>
@@ -175,11 +171,11 @@ export default function AddMatch({ players, onAddMatch, ranks }: AddMatchProps) 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-6 bg-gray-900 dark:bg-emerald-600 text-white rounded-[1.5rem] hover:bg-black dark:hover:bg-emerald-700 transition-all font-black text-2xl uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 disabled:opacity-50 active:scale-95 group"
+            className="w-full py-4 bg-gray-900 dark:bg-emerald-600 text-white rounded-xl hover:bg-black dark:hover:bg-emerald-700 transition-all font-black text-lg uppercase tracking-widest shadow-xl shadow-emerald-500/10 disabled:opacity-50 active:scale-95 group"
           >
             {loading ? 'Speichere...' : (
-              <span className="flex items-center justify-center gap-3">
-                <CheckCircle className="w-7 h-7 group-hover:scale-125 transition-transform" /> Match Bestätigen
+              <span className="flex items-center justify-center gap-2">
+                <CheckCircle className="w-5 h-5 group-hover:scale-110 transition-transform" /> Match Bestätigen
               </span>
             )}
           </button>
@@ -195,18 +191,18 @@ function ModeButton({ label, mode, current, set }: { label: string, mode: MatchT
     <button
       type="button"
       onClick={() => set(mode)}
-      className={`flex flex-col items-center justify-center p-6 rounded-[2rem] transition-all border-4 ${isActive
-        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-xl shadow-emerald-500/10 scale-105'
+      className={`flex flex - col items - center justify - center p - 4 rounded - xl transition - all border - 2 ${isActive
+        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 shadow-md scale-105'
         : 'bg-white dark:bg-gray-800 border-gray-50 dark:border-gray-700 text-gray-300 hover:border-gray-200 dark:hover:border-gray-600'
-        }`}
+        } `}
     >
-      <Users className={`w-8 h-8 mb-3 ${isActive ? 'text-emerald-500' : 'text-gray-400'}`} />
-      <span className="text-[11px] font-black uppercase tracking-widest">{label}</span>
+      <Users className={`w - 5 h - 5 mb - 2 ${isActive ? 'text-emerald-500' : 'text-gray-400'} `} />
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
     </button>
   );
 }
 
-function PlayerSelects({ ids, setIds, count, players, ranks }: { ids: string[], setIds: (v: string[]) => void, count: number, players: Player[], ranks: Rank[] }) {
+function PlayerSelects({ ids, setIds, count, players }: { ids: string[], setIds: (v: string[]) => void, count: number, players: Player[] }) {
   const activeIds = ids.slice(0, count);
 
   return (
@@ -220,13 +216,12 @@ function PlayerSelects({ ids, setIds, count, players, ranks }: { ids: string[], 
             next[idx] = e.target.value;
             setIds(next);
           }}
-          className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 text-lg font-black border-2 border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white outline-none appearance-none transition-all cursor-pointer shadow-sm"
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 text-base font-bold border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 dark:text-white outline-none appearance-none transition-all cursor-pointer shadow-sm"
         >
           <option value="">Spieler wählen...</option>
           {players
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((p) => {
-              const rank = getRank(p.elo_rating, ranks);
               return (
                 <option key={p.id} value={p.id}>
                   {p.name} ({Math.round(p.elo_rating)})

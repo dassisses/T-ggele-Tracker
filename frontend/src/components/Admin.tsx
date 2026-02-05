@@ -189,7 +189,7 @@ export default function Admin({
     }
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-12 animate-fade-in pb-20 px-6">
+        <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20 px-4">
             <div className="flex items-center justify-between pb-6 border-b-2 border-gray-100 dark:border-gray-700">
                 <div>
                     <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Admin Dashboard</h1>
@@ -203,15 +203,15 @@ export default function Admin({
                 </button>
             </div>
 
-            <div className="flex flex-col gap-12">
+            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-8">
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 space-y-8 border border-gray-100 dark:border-gray-700">
-                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-6">
-                        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-                            <Settings className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-5">
+                        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                         </div>
                         <div className="flex-1">
-                            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">System Einstellungen</h2>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Basis-Konfiguration</p>
+                            <h2 className="text-xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tight">System Einstellungen</h2>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Basis-Konfiguration</p>
                         </div>
                     </div>
 
@@ -250,17 +250,17 @@ export default function Admin({
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 space-y-8 border border-gray-100 dark:border-gray-700">
-                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-6">
-                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-                            <RefreshCw className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 space-y-6 border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-5">
+                        <div className="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+                            <RefreshCw className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
-                        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Saison & Reset</h2>
+                        <h2 className="text-xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tight">Saison & Reset</h2>
                     </div>
 
-                    <div className="p-8 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-100 dark:border-purple-800">
-                        <h3 className="text-lg font-black text-purple-900 dark:text-purple-300 mb-3 uppercase tracking-wider">Neue Saison starten</h3>
-                        <p className="text-base text-purple-700 dark:text-purple-400 mb-6 leading-relaxed font-medium">
+                    <div className="p-6 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-800">
+                        <h3 className="text-sm font-black text-purple-900 dark:text-purple-300 mb-3 uppercase tracking-wider">Neue Saison starten</h3>
+                        <p className="text-sm text-purple-700 dark:text-purple-400 mb-5 leading-relaxed font-medium">
                             Archiviert alle aktuellen Rankings und Matches in die Historie und setzt die Saison auf Null.
                         </p>
                         <div className="flex gap-2">
@@ -278,43 +278,43 @@ export default function Admin({
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 border border-gray-100 dark:border-gray-700">
-                    <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-8 mb-10">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-6 mb-8">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
-                                <Sliders className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                            <div className="p-2.5 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+                                <Sliders className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Erweiterte Punkte-Logik</h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Definiere genau, wie Punkte vergeben werden</p>
+                                <h2 className="text-xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tight">Erweiterte Punkte-Logik</h2>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Definiere genau, wie Punkte vergeben werden</p>
                             </div>
                         </div>
                         <button
                             onClick={handleSaveSettings}
-                            className="px-8 py-3 bg-gray-900 dark:bg-emerald-600 text-white rounded-xl hover:bg-black dark:hover:bg-emerald-700 font-extrabold flex items-center gap-3 shadow-xl transition-all active:scale-95"
+                            className="px-6 py-2 bg-gray-900 dark:bg-emerald-600 text-white rounded-lg hover:bg-black dark:hover:bg-emerald-700 font-bold flex items-center gap-2 shadow-md transition-all active:scale-95 text-sm"
                         >
-                            <Save className="w-5 h-5" /> Einstellungen Speichern
+                            <Save className="w-4 h-4" /> Speichern
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-8">
-                            <h3 className="text-lg font-black text-gray-800 dark:text-gray-200 flex items-center gap-2 uppercase tracking-wide">
-                                <Zap className="w-5 h-5 text-amber-500" /> Leistungs-Anreize
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                            <h3 className="text-sm font-black text-gray-800 dark:text-gray-200 flex items-center gap-2 uppercase tracking-wide">
+                                <Zap className="w-4 h-4 text-amber-500" /> Leistungs-Anreize
                             </h3>
 
-                            <div className="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-6 border border-amber-100 dark:border-amber-800">
-                                <div className="flex justify-between mb-3">
-                                    <label className="text-base font-bold text-gray-800 dark:text-gray-300">Tor-Differenz Bonus</label>
-                                    <span className="text-lg font-black text-amber-600">+{eloConfig.goal_diff_bonus_percent}%</span>
+                            <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 border border-amber-100 dark:border-amber-800">
+                                <div className="flex justify-between mb-2">
+                                    <label className="text-sm font-bold text-gray-800 dark:text-gray-300">Tor-Differenz Bonus</label>
+                                    <span className="text-base font-black text-amber-600">+{eloConfig.goal_diff_bonus_percent}%</span>
                                 </div>
                                 <input
                                     type="range" min="0" max="100" step="5"
                                     value={eloConfig.goal_diff_bonus_percent}
                                     onChange={(e) => setEloConfig({ ...eloConfig, goal_diff_bonus_percent: parseInt(e.target.value) })}
-                                    className="w-full h-3 bg-amber-200 dark:bg-amber-800 rounded-full appearance-none cursor-pointer accent-amber-600 mb-3"
+                                    className="w-full h-2 bg-amber-200 dark:bg-amber-800 rounded-full appearance-none cursor-pointer accent-amber-600 mb-2"
                                 />
-                                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium italic">Pro Tor Differenz gibt es X% mehr Punkte. (Bei 10:0 statt 10:9 mehr Punkte gewinnen)</p>
+                                <p className="text-[11px] text-gray-600 dark:text-gray-400 font-medium italic">Pro Tor Differenz gibt es X% mehr Punkte.</p>
                             </div>
 
                             <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
@@ -372,22 +372,22 @@ export default function Admin({
                 </div>
 
                 <div className="flex flex-col gap-12">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-10 space-y-8 border border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center gap-5 border-b-2 border-gray-50 dark:border-gray-700 pb-8">
-                            <div className="p-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl shadow-inner">
-                                <UserPlus className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 space-y-6 border border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-5">
+                            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+                                <UserPlus className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Spieler verwalten</h2>
+                            <h2 className="text-xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tight">Spieler verwalten</h2>
                         </div>
 
                         <div className="max-w-4xl">
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 <input
                                     type="text"
                                     placeholder="Neuer Spieler Name"
                                     value={newPlayerName}
                                     onChange={(e) => setNewPlayerName(e.target.value)}
-                                    className="flex-1 px-6 py-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-gray-700 dark:text-white outline-none font-bold text-xl transition-all shadow-sm"
+                                    className="flex-1 px-4 py-3 border-2 border-gray-100 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-gray-700 dark:text-white outline-none font-bold text-base transition-all shadow-sm"
                                 />
                                 <button
                                     onClick={async () => {
@@ -399,10 +399,10 @@ export default function Admin({
                                         }
                                     }}
                                     disabled={loading}
-                                    className="px-6 py-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all shadow-lg active:scale-95 flex items-center gap-2 group h-[60px]"
+                                    className="px-5 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-md active:scale-95 flex items-center gap-2 group"
                                 >
-                                    <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />
-                                    <span className="font-bold text-lg uppercase tracking-wider">Hinzufügen</span>
+                                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                                    <span className="font-bold text-sm uppercase tracking-wider">Hinzufügen</span>
                                 </button>
                             </div>
                         </div>
@@ -422,28 +422,28 @@ export default function Admin({
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-xl p-10 space-y-10 border border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center gap-5 border-b-2 border-gray-50 dark:border-gray-700 pb-8">
-                            <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-2xl shadow-inner">
-                                <Trophy className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 space-y-6 border border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-700 pb-5">
+                            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+                                <Trophy className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                             </div>
-                            <h2 className="text-2xl font-extrabold text-gray-900 dark:text-whiteTracking-tight">Ränge definieren</h2>
+                            <h2 className="text-xl font-extrabold text-gray-900 dark:text-white uppercase tracking-tight">Ränge definieren</h2>
                         </div>
 
-                        <div className="space-y-8">
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-                                <div className="space-y-3 lg:col-span-4">
-                                    <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-2">Rang Name</label>
-                                    <input value={newRankName} onChange={e => setNewRankName(e.target.value)} className="w-full px-6 py-4 border-2 border-amber-100 dark:border-amber-700 rounded-2xl focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 outline-none font-bold text-xl dark:bg-gray-700 dark:text-white transition-all shadow-sm" placeholder="z.B. Legend" />
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+                                <div className="space-y-2 lg:col-span-4">
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Rang Name</label>
+                                    <input value={newRankName} onChange={e => setNewRankName(e.target.value)} className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none font-bold text-base dark:bg-gray-700 dark:text-white transition-all shadow-sm" placeholder="z.B. Legend" />
                                 </div>
-                                <div className="space-y-3 lg:col-span-3">
-                                    <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-2">Min ELO</label>
-                                    <input type="number" value={newRankElo} onChange={e => setNewRankElo(e.target.value)} className="w-full px-6 py-4 border-2 border-amber-100 dark:border-amber-700 rounded-2xl focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 outline-none font-bold text-xl dark:bg-gray-700 dark:text-white text-center transition-all shadow-sm" placeholder="0" />
+                                <div className="space-y-2 lg:col-span-3">
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Min ELO</label>
+                                    <input type="number" value={newRankElo} onChange={e => setNewRankElo(e.target.value)} className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none font-bold text-base dark:bg-gray-700 dark:text-white text-center transition-all shadow-sm" placeholder="0" />
                                 </div>
-                                <div className="space-y-3 lg:col-span-3">
-                                    <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-2">Farbe</label>
+                                <div className="space-y-2 lg:col-span-3">
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Farbe</label>
                                     <div className="relative">
-                                        <select value={newRankColor} onChange={e => setNewRankColor(e.target.value)} className="w-full px-6 py-4 border-2 border-amber-100 dark:border-amber-700 rounded-2xl focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 bg-white dark:bg-gray-700 dark:text-white font-bold text-xl outline-none cursor-pointer transition-all shadow-sm appearance-none">
+                                        <select value={newRankColor} onChange={e => setNewRankColor(e.target.value)} className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 bg-white dark:bg-gray-700 dark:text-white font-bold text-base outline-none cursor-pointer transition-all shadow-sm appearance-none">
                                             <option value="gray">Gray</option>
                                             <option value="blue">Blue</option>
                                             <option value="green">Green</option>
@@ -451,15 +451,15 @@ export default function Admin({
                                             <option value="purple">Purple</option>
                                             <option value="red">Red</option>
                                         </select>
-                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <div className="w-6 h-6 rounded-full shadow-md" style={{ backgroundColor: RANK_COLORS[newRankColor as keyof typeof RANK_COLORS] || '#6b7280' }}></div>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: RANK_COLORS[newRankColor as keyof typeof RANK_COLORS] || '#6b7280' }}></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="lg:col-span-2">
-                                    <button onClick={handleAddRank} className="w-full p-4 bg-amber-600 text-white rounded-2xl hover:bg-amber-700 shadow-xl transition-all active:scale-95 group flex items-center justify-center h-[60px]">
-                                        <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" />
-                                        <span className="ml-2 font-bold text-lg uppercase tracking-wider">Erstellen</span>
+                                    <button onClick={handleAddRank} className="w-full p-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 shadow-md transition-all active:scale-95 group flex items-center justify-center">
+                                        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                                        <span className="ml-1.5 font-bold text-sm uppercase tracking-wider">Erstellen</span>
                                     </button>
                                 </div>
                             </div>
